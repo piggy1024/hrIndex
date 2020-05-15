@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router' //可通过提示导入
-// import Login from "@/components/Login";
+import Login from "@/components/Login";
 import Hr_Index from "@/components/Hr_Index";
 import Position from "@/components/hr/Position";
 import Resume from "@/components/hr/Resume";
@@ -9,13 +9,12 @@ import Person_Info from "@/components/hr/Person_Info";
 Vue.use(Router)
 export default new Router({
     /*mode:'history',*/
-    routes: [
-        // {
-        //     path: '/',
-        //     name: 'Login',
-        //     component: Login,
+    routes: [{
+            path: '/',
+            name: 'Login',
+            component: Login,
 
-        // },
+        },
 
         //  为了显示首页方便调试
         {

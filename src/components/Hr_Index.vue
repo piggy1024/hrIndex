@@ -2,7 +2,7 @@
   <div>
     <el-container style="height:100%">
       <el-aside style="width: 200px">
-        <el-menu router background-color="#545c64" text-color="#fff">
+        <el-menu router background-color="#545c64" text-color="#fff" default-active="/Person_Info">
           <div class="title">Hr管理中心</div>
           <el-menu-item
             :index="item.path"
@@ -18,7 +18,7 @@
       <el-container>
         <el-header class="homeHeader">
           <div>
-            // 面包屑
+            <!-- // 面包屑 -->
             <!-- <el-breadcrumb separator-class="el-icon-arrow-right">
               <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
               <el-breadcrumb-item>活动管理</el-breadcrumb-item>
@@ -28,9 +28,9 @@
           </div>
           <div>
             <el-button
-              icon="el-icon-bell"
+              icon="el-icon-setting"
               type="text"
-              style="margin-right: 8px;color: #000000;"
+              style="margin-right: 8px;color: #fff;"
               size="normal"
             ></el-button>
             <el-dropdown class="userInfo" @command="commandHandler">
@@ -39,11 +39,9 @@
                 <!--双引号里一般解释为字符串，但用v-bind绑定后就可以当成变量-->
               </span>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item command="个人中心">个人中心</el-dropdown-item>
-                <el-dropdown-item command="设置">设置</el-dropdown-item>
-                <el-dropdown-item command="logout" divided
-                  >注销登录</el-dropdown-item
-                >
+                <!-- <el-dropdown-item command="个人中心">个人中心</el-dropdown-item>
+                <el-dropdown-item command="设置">设置</el-dropdown-item>-->
+                <el-dropdown-item command="logout" divided>注销登录</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </div>
@@ -56,30 +54,26 @@
             :closable="tag.name !== 'person_info'"
             :disable-transitions="false"
             @close="handleClose(tag, index)"
-            size="mini"
+            size="medium"
             @click="changeMenu(tag)"
             type="primary"
             :effect="$route.name === tag.name ? 'dark' : 'plain'"
-            >{{ tag.label }}</el-tag
-          >
+          >{{ tag.label }}</el-tag>
         </div>
 
         <el-main style="height:700px">
-          <el-breadcrumb separator-class="el-icon-arrow-right">
-            <el-breadcrumb-item></el-breadcrumb-item>
-          </el-breadcrumb>
-
-          <router-view class="home" />
+          <router-view />
         </el-main>
       </el-container>
     </el-container>
 
-    <div class="line"></div>
+    <!-- <div class="line"></div> -->
   </div>
 </template>
 
 <script>
 import { mapState, mapMutations } from "vuex";
+import hrApi from "@/api/hr/hr";
 
 export default {
   name: "Hr_Index",
@@ -87,7 +81,7 @@ export default {
   data() {
     return {
       activeIndex: "4",
-      user: JSON.parse(window.sessionStorage.getItem("user")),
+      user: JSON.parse(window.sessionStorage.getItem("user"))
     };
   },
   computed: {
@@ -96,14 +90,16 @@ export default {
       return this.$store.state.tab.menu;
     },
     ...mapState({
-      tags: (state) => state.tab.tabsList,
-    }),
+      tags: state => state.tab.tabsList
+    })
+  },
+  created() {
+    // 登陆后显示的页面为个人中心页面
+    this.$router.push("/Person_Info");
+    // 刷新的时候将tab的菜单清空
+    this.currentMenu = [];
   },
   methods: {
-    /*有router属性不用点击事件*/
-    /*menuClick(index){
-                this.$router.push(index)
-            },*/
     // 点击tab菜单项跳转页面
     changeMenu(item) {
       this.$router.push({ name: item.name });
@@ -116,7 +112,7 @@ export default {
     },
 
     ...mapMutations({
-      close: "closeTab",
+      close: "closeTab"
     }),
 
     // tab的方法
@@ -143,27 +139,28 @@ export default {
         this.$confirm("此操作将退出登录, 是否继续?", "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
-          type: "warning",
+          type: "warning"
         })
           .then(() => {
-            this.getRequst("/logout");
-            window.sessionStorage.removeItem("user");
-            this.$store.commit("initRoutes", []);
-            this.$router.replace("/");
-            /*this.$message({
-                            type: 'success',
-                            message: '成功退出!'
-                        });*/
+            hrApi.postRequest0("/logout").then(() => {
+              window.sessionStorage.removeItem("user");
+              // this.$store.commit("initRoutes", []);
+              this.$router.replace("/");
+              this.$message({
+                type: "success",
+                message: "成功退出!"
+              });
+            });
           })
           .catch(() => {
             this.$message({
               type: "info",
-              message: "已取消",
+              message: "已取消"
             });
           });
       }
-    },
-  },
+    }
+  }
 };
 </script>
 
@@ -180,7 +177,7 @@ export default {
   color: white;
   font-size: 35px;
   text-align: center;
-  margin-top: 15px;
+  margin: 15px 0;
 }
 .el-dropdown-link {
   display: flex;

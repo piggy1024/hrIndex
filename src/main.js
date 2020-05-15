@@ -15,10 +15,11 @@ Vue.config.productionTip = false
 Vue.use(ElementUI, {
   size: 'small'
 })
-import {
-  postRequst
-} from '@/util/api'
-Vue.prototype.postRequst1 = postRequst
+// import {
+//   postRequst,
+//   logoutRequest
+// } from '@/util/api'
+
 
 
 new Vue({

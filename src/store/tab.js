@@ -62,8 +62,7 @@ export default {
     //   console.log(val, "vuex");
     // },
     // clearMenu(state) {
-    //   state.menu = [];
-    //   Cookie.remove("menu");
+    //   state.currentMenu = [];
     // },
     selectMenu(state, val) {
       if (val.name !== "person_info") {
