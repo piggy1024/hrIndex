@@ -36,11 +36,42 @@ function getRequest(url) {
     })
 }
 
+// 带参数的get请求
+function getRequest1(url, params1) {
+    return axios({
+        method: 'get',
+        url: `${base}${url}`,
+        params: {
+            title: params1
+        }
+    })
+}
+
+// 不带参数的put请求
+function putRequest(url) {
+    return axios({
+        method: 'put',
+        url: `${base}${url}`,
+    })
+}
+
+// 带参数的put请求
+function putRequest1(url, params) {
+    return axios({
+        method: 'put',
+        url: `${base}${url}`,
+        data: params
+    })
+}
+
 export default {
     postRequest0,
     postRequest,
     postRequest1,
     getRequest,
+    getRequest1,
+    putRequest,
+    putRequest1
 }
 
 /*url为路径，data作为请求主体被发送的数据*/

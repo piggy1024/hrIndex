@@ -44,8 +44,8 @@ export default {
       loading: false,
       checked: true,
       LoginForm: {
-        username: "15819091730",
-        password: "123456"
+        username: "",
+        password: ""
       },
       /*自定义表单验证规则*/
       rules: {
@@ -69,17 +69,25 @@ export default {
             this.LoginForm.username +
             "&hrPass=" +
             this.LoginForm.password;
-          hrApi.postRequest(url, params).then(resp => {
-            this.loading = false;
-            if (resp) {
-              // console.log(resp);
-              this.$message.success("登录成功！");
-              window.sessionStorage.setItem("user", JSON.stringify(resp));
-              this.$router.replace("/Hr_index");
-            }
-          });
+          hrApi
+            .postRequest(url, params)
+            .then(res => {
+              this.loading = false;
+              if (res.data === 1) {
+                // console.log(res.data);
+                this.$message.success("登录成功！");
+                window.sessionStorage.setItem("user", JSON.stringify(res));
+                this.$router.replace("/Hr_index");
+              } else {
+                this.$message.error("密码或用户名输入错误!");
+                this.$router.push("/");
+              }
+            })
+            .catch(error => {
+              console.log(error);
+            });
         } else {
-          this.$message.error("密码或用户未输入");
+          this.$message.error("密码或用户名未输入");
           return false;
         }
       });
