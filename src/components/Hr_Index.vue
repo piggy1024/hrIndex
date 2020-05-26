@@ -62,7 +62,7 @@
         </div>
 
         <el-main style="height:700px">
-          <router-view />
+          <router-view v-if="$route.meta.keepAlive" />
         </el-main>
       </el-container>
     </el-container>
@@ -94,6 +94,126 @@ export default {
     })
   },
   created() {
+    // 根据登陆的标志(是root还是普通HR给menu赋值)
+    if (!this.$store.state.tab.isRoot) {
+      // 普通权限HR的菜单
+      let menu = [
+        {
+          path: "/person_info",
+          name: "person_info",
+          label: "个人中心",
+          icon: "s-home",
+          url: "person_info"
+        },
+        {
+          path: "/resume",
+          name: "resume",
+          label: "简历管理",
+          icon: "discover",
+          url: "resume"
+        },
+        {
+          path: "/position",
+          name: "position",
+          label: "职位管理",
+          icon: "user",
+          url: "position"
+        },
+        {
+          path: "/interview",
+          name: "interview",
+          label: "面试管理",
+          icon: "s-check",
+          url: "interview"
+        },
+        {
+          path: "/employ",
+          name: "employ",
+          label: "录用管理",
+          icon: "aim",
+          url: "employ"
+        },
+        {
+          path: "/talent",
+          name: "talent",
+          label: "人才库",
+          icon: "s-custom",
+          url: "talent"
+        }
+      ];
+      this.$store.commit("handleMenu", menu);
+    } else {
+      // ROOT权限HR的菜单(多个HR管理模块)
+      let menu = [
+        {
+          path: "/person_info",
+          name: "person_info",
+          label: "个人中心",
+          icon: "s-home",
+          url: "person_info"
+        },
+        {
+          path: "/root",
+          name: "root",
+          label: "HR账号管理",
+          icon: "setting",
+          url: "root"
+        },
+        {
+          path: "/resume",
+          name: "resume",
+          label: "简历管理",
+          icon: "discover",
+          url: "resume"
+        },
+        {
+          path: "/position",
+          name: "position",
+          label: "职位管理",
+          icon: "user",
+          url: "position"
+        },
+        {
+          path: "/interview",
+          name: "interview",
+          label: "面试管理",
+          icon: "s-check",
+          url: "interview"
+        },
+        {
+          path: "/employ",
+          name: "employ",
+          label: "录用管理",
+          icon: "aim",
+          url: "employ"
+        },
+        {
+          path: "/talent",
+          name: "talent",
+          label: "人才库",
+          icon: "s-custom",
+          url: "talent"
+        }
+      ];
+      this.$store.commit("handleMenu", menu);
+    }
+
+    //在页面加载时读取sessionStorage里的状态信息
+    if (sessionStorage.getItem("store")) {
+      this.$store.replaceState(
+        Object.assign(
+          {},
+          this.$store.state,
+          JSON.parse(sessionStorage.getItem("store"))
+        )
+      );
+    }
+
+    //在页面刷新时将vuex里的信息保存到sessionStorage里
+    window.addEventListener("beforeunload", () => {
+      sessionStorage.setItem("store", JSON.stringify(this.$store.state));
+    });
+
     // 登陆后显示的页面为个人中心页面
     this.$router.push("/Person_Info");
     // 刷新的时候将tab的菜单清空

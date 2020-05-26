@@ -4,12 +4,15 @@ import router from './router'
 import store from "./store";
 import ElementUI from 'element-ui' //可通过提示导入
 import 'element-ui/lib/theme-chalk/index.css'
+import Axios from 'axios'
 
 import Router from 'vue-router'
 const routerPush = Router.prototype.push
 Router.prototype.push = function push(location) {
   return routerPush.call(this, location).catch(error => error)
 }
+
+Vue.prototype.$http = Axios
 
 Vue.config.productionTip = false
 Vue.use(ElementUI, {
@@ -25,5 +28,9 @@ Vue.use(ElementUI, {
 new Vue({
   render: h => h(App),
   router,
-  store
+  store,
+  create() {
+
+
+  }
 }).$mount('#app')

@@ -15,7 +15,7 @@
           </el-dropdown-menu>
         </el-dropdown>
         <!-- 根据简历情况查询情况的tab -->
-        <template v-if="true">
+        <template>
           <el-tag
             size="small"
             @click="search_allResume()"
@@ -23,26 +23,29 @@
           >全部</el-tag>
           <el-tag
             size="small"
-            @click="search_newResume()"
-            :effect="this.searchType === 'newResume' ? 'dark' : 'plain'"
-          >新简历</el-tag>
+            @click="search_first()"
+            :effect="this.searchType === 'first' ? 'dark' : 'plain'"
+          >一面</el-tag>
           <el-tag
             size="small"
-            @click="search_beiXuan()"
-            :effect="this.searchType === 'beiXuan' ? 'dark' : 'plain'"
-          >备选</el-tag>
+            @click="search_second()"
+            :effect="this.searchType === 'second' ? 'dark' : 'plain'"
+          >二面</el-tag>
           <el-tag
             size="small"
-            @click="search_quit()"
-            :effect="this.searchType === 'quit' ? 'dark' : 'plain'"
-          >已放弃</el-tag>
-        </template>
-        <template v-if="false">
+            @click="search_third()"
+            :effect="this.searchType === 'third' ? 'dark' : 'plain'"
+          >三面</el-tag>
           <el-tag
             size="small"
-            @click="search_allResume()"
-            :effect="this.searchType === 'allResume' ? 'dark' : 'plain'"
-          >全部</el-tag>
+            @click="search_more()"
+            :effect="this.searchType === 'more' ? 'dark' : 'plain'"
+          >更多面</el-tag>
+          <!-- <el-tag
+            size="small"
+            @click="search_pass()"
+            :effect="this.searchType === 'pass' ? 'dark' : 'plain'"
+          >未通过</el-tag>-->
         </template>
       </div>
       <div class="right" style="display:flex">
@@ -87,8 +90,8 @@
               操作
               <el-dropdown-menu>
                 <el-dropdown-item @click.native="sendOffer(scope.row.applicationId)">发送offer</el-dropdown-item>
-                <el-dropdown-item @click.native="quit(scope.row.applicationId)">放弃</el-dropdown-item>
-                <el-dropdown-item @click.native="interview(scope.row.applicationId)">安排面试</el-dropdown-item>
+                <el-dropdown-item @click.native="interview(scope.row.applicationId)">安排下一场面试</el-dropdown-item>
+                <el-dropdown-item @click.native="quit(scope.row.applicationId)">面试未通过进人才库</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </template>
@@ -185,6 +188,8 @@ export default {
   name: "Resume",
   data() {
     return {
+      // 是否点击了点击了搜索框进行搜索
+      isSearch: false,
       // 搜索框表单
       searchForm: {
         keyword: ""
@@ -239,51 +244,65 @@ export default {
     // 获取表格中的简历数据
     getList() {
       this.config.loading = true;
-      let params = {
-        page: this.config.page,
-        limit: 8
-      };
-      // 全部
-      if (this.searchType === "allResume") {
-        let url = "/resumeInfo";
-        hrApi.getRequest1(url, params).then(res => {
-          // 给表格数据赋值
-          console.log(res.data.resumeInfo.list);
-
-          this.tableData = res.data.resumeInfo.list.map(item => {
-            item.gender = item.gender === 1 ? "女" : "男";
-            return item;
+      if (!this.isSearch) {
+        // 全部
+        if (this.searchType === "allResume") {
+          let url = "/interview/all";
+          let params = "page=" + this.config.page + "&limit=" + 8;
+          hrApi.postRequest(url, params).then(res => {
+            // 给表格数据赋值
+            this.tableData = res.data.interviews.list.map(item => {
+              item.gender = item.gender === 1 ? "女" : "男";
+              return item;
+            });
           });
-          // 分页的参数赋值
-          // this.lastPage = res.data.resumeInfo.lastPage;
-        });
-      } else if (this.searchType === "newResume") {
-        let url = "/resume/0";
-        hrApi.getRequest1(url, params).then(res => {
-          // 给表格数据赋值
-          this.tableData = res.data.resumes.list.map(item => {
-            item.gender = item.gender === 1 ? "女" : "男";
-            return item;
+        } else if (this.searchType === "first") {
+          let url = "/interview/category/";
+          let params =
+            "state=" + 2 + "&page=" + this.config.page + "&limit=" + 8;
+          hrApi.postRequest(url, params).then(res => {
+            // 给表格数据赋值
+            this.tableData = res.data.interviews.list.map(item => {
+              item.gender = item.gender === 1 ? "女" : "男";
+              return item;
+            });
           });
-          // 分页的参数赋值
-          // this.lastPage = res.data.resumes.lastPage;
-        });
-      } else if (this.searchType === "beiXuan") {
-        let url = "/resume/1";
-        hrApi.getRequest(url).then(res => {
-          this.tableData = res.data.resumes.list.map(item => {
-            item.gender = item.gender === 1 ? "女" : "男";
-            return item;
+        } else if (this.searchType === "second") {
+          let url = "/interview/category/";
+          let params =
+            "state=" + 3 + "&page=" + this.config.page + "&limit=" + 8;
+          hrApi.postRequest(url, params).then(res => {
+            // 给表格数据赋值
+            this.tableData = res.data.interviews.list.map(item => {
+              item.gender = item.gender === 1 ? "女" : "男";
+              return item;
+            });
           });
-        });
-      } else if (this.searchType === "quit") {
-        let url = "/resume/-1";
-        hrApi.getRequest(url).then(res => {
-          this.tableData = res.data.resumes.list.map(item => {
-            item.gender = item.gender === 1 ? "女" : "男";
-            return item;
+        } else if (this.searchType === "third") {
+          let url = "/interview/category/";
+          let params =
+            "state=" + 4 + "&page=" + this.config.page + "&limit=" + 8;
+          hrApi.postRequest(url, params).then(res => {
+            // 给表格数据赋值
+            this.tableData = res.data.interviews.list.map(item => {
+              item.gender = item.gender === 1 ? "女" : "男";
+              return item;
+            });
           });
-        });
+        } else if (this.searchType === "more") {
+          let url = "/interview/more";
+          let params = "page=" + this.config.page + "&limit=" + 8;
+          hrApi.postRequest(url, params).then(res => {
+            // 给表格数据赋值
+            this.tableData = res.data.interviews.list.map(item => {
+              item.gender = item.gender === 1 ? "女" : "男";
+              return item;
+            });
+          });
+        }
+      } else {
+        // 调用搜索框搜索(分页的实现)
+        this.searchKeyword();
       }
     },
 
@@ -297,36 +316,39 @@ export default {
     },
     // 分职位类别查询简历
     handleCommand(position) {
+      // 点击职位搜索 就不是处理搜索框搜索的状态
+      this.isSearch = false;
+
       // 点击按职位分类查询简历时,则简历查看情况的tab不加深显示
       this.searchType = "allResume";
       let url = "/position/category";
-      let params = {
-        page: 1,
-        limit: 8
-      };
-      let url1 = "/resumeInfo/";
+      let params = "page=" + this.config.page + "&limit=" + 8;
+      let url1 = "/interview/all";
       hrApi.getRequest3(url, position).then(res => {
         res;
-        hrApi.getRequest2(url1, params).then(res => {
-          this.tableData = res.data.resumeInfo.list.map(item => {
+        hrApi.postRequest(url1, params).then(res => {
+          this.tableData = res.data.interviews.list.map(item => {
             item.gender = item.gender === 1 ? "女" : "男";
             return item;
           });
         });
       });
-
       this.$message("click on item " + position);
     },
     // 搜索框搜索简历
     searchKeyword(keyword) {
+      // 处于搜索框搜索状态,点击一面搜索是在搜索出的内容里找一面的简历
+      this.isSearch = true;
+
+      this.searchType = "allResume";
       let url = "/search";
-      let params = "keyword=" + keyword;
+      let params =
+        "keyword=" + keyword + "&page=" + this.config.page + "&limit=" + 8;
       hrApi.postRequest(url, params).then(res => {
         this.tableData = res.data.posInfo.list.map(item => {
           item.gender = item.gender === 1 ? "女" : "男";
           return item;
         });
-        // console.log(res);
       });
     },
     // hr通知发送offer
@@ -365,16 +387,12 @@ export default {
             "flag=" +
             this.formIterview.rounds +
             "&interviewsDesc=" +
-            this.formIterview.description;
+            this.formIterview.descriptiond;
           hrApi.putRequest1(url, params).then(res => {
-            // console.log(res);
             if (res.statusText === "OK") {
-              this.$message.success("安排面试成功!");
-
               this.getList();
             }
           });
-          this.$refs.formIterview.resetFields();
         } else {
           this.$message.error("安排面试失败!未填写完整的面试通知信息!");
           return false;
@@ -387,36 +405,43 @@ export default {
       this.searchType = "allResume";
       this.getList();
     },
-    search_newResume() {
-      // 新简历
-      this.searchType = "newResume";
+    search_first() {
+      // 一面
+      this.searchType = "first";
       this.getList();
     },
-    search_beiXuan() {
-      // 备选
-      this.searchType = "beiXuan";
+    search_second() {
+      // 二面
+      this.searchType = "second";
       this.getList();
     },
-    search_quit() {
-      // 放弃
-      this.searchType = "quit";
+    search_third() {
+      // 三面
+      this.searchType = "third";
       this.getList();
     },
-
+    search_more() {
+      // 更多面
+      this.searchType = "more";
+      this.getList();
+    },
     // 发送offer
     sendOffer(applicationId) {
       this.dialogSendoffer = true;
       this.applicationId = applicationId;
     },
-    // 放弃简历
+    // 放弃简历  url需要修改为/abandon/
     quit(id) {
-      let url = "/removeresume/" + id;
-
+      let url = "/abandon/" + id;
+      // let params = id;
       hrApi.putRequest(url).then(res => {
-        console.log(res);
+        this.$message.success(res.data);
+        this.getList();
       });
-      console.log("行数" + id);
+
+      // console.log("行数" + id);
     },
+
     // 安排面试
     interview(applicationId) {
       this.dialogInterview = true;

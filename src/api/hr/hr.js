@@ -37,12 +37,43 @@ function getRequest(url) {
 }
 
 // 带参数的get请求
-function getRequest1(url, params1) {
+function getRequest1(url, params) {
+    let page = params.page
+    let limit = params.limit
     return axios({
         method: 'get',
         url: `${base}${url}`,
         params: {
-            title: params1
+            page: page,
+            // 默认是6条可以选择不带参数
+            limit: limit
+        }
+    })
+}
+
+function getRequest2(url, params) {
+    let page = params.page
+    let limit = params.limit
+    let state = params.state
+    return axios({
+        method: 'get',
+        url: `${base}${url}`,
+        params: {
+            state: state,
+            page: page,
+            // 默认是6条可以选择不带参数
+            limit: limit
+        }
+    })
+}
+
+function getRequest3(url, params) {
+    let title = params
+    return axios({
+        method: 'get',
+        url: `${base}${url}`,
+        params: {
+            title: title
         }
     })
 }
@@ -70,6 +101,8 @@ export default {
     postRequest1,
     getRequest,
     getRequest1,
+    getRequest2,
+    getRequest3,
     putRequest,
     putRequest1
 }

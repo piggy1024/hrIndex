@@ -65,7 +65,7 @@ export default {
           // url 为接口网址
           let url = "/loginPost";
           let params =
-            "hrName=" +
+            "hrMobile=" +
             this.LoginForm.username +
             "&hrPass=" +
             this.LoginForm.password;
@@ -73,8 +73,15 @@ export default {
             .postRequest(url, params)
             .then(res => {
               this.loading = false;
-              if (res.data === 1) {
-                // console.log(res.data);
+              console.log(res);
+              // res.data ===0 是登陆成功   === -1 是登陆失败  === 1 是root
+              if (res.data === 0) {
+                this.$store.state.tab.isRoot = false;
+                this.$message.success("登录成功！");
+                window.sessionStorage.setItem("user", JSON.stringify(res));
+                this.$router.replace("/Hr_index");
+              } else if (res.data === 1) {
+                this.$store.state.tab.isRoot = true;
                 this.$message.success("登录成功！");
                 window.sessionStorage.setItem("user", JSON.stringify(res));
                 this.$router.replace("/Hr_index");
