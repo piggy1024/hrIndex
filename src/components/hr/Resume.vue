@@ -15,7 +15,7 @@
           </el-dropdown-menu>
         </el-dropdown>
         <!-- 根据简历情况查询情况的tab -->
-        <template v-if="true">
+        <template v-if="clickSearch">
           <el-tag
             size="small"
             @click="search_allResume()"
@@ -37,7 +37,7 @@
             :effect="this.searchType === 'quit' ? 'dark' : 'plain'"
           >已放弃</el-tag>
         </template>
-        <template v-if="false">
+        <template v-if="!clickSearch">
           <el-tag
             size="small"
             @click="search_allResume()"
@@ -51,6 +51,7 @@
           class="input-with-select"
           clearable
           v-model="searchForm.keyword"
+          @clear="clearSearch"
         ></el-input>
         <el-button
           type="primary"
@@ -188,6 +189,8 @@ export default {
   name: "Resume",
   data() {
     return {
+      // 是否点击搜索框
+      clickSearch: true,
       // 搜索框表单
       searchForm: {
         keyword: ""
@@ -251,8 +254,6 @@ export default {
         let url = "/resumeInfo";
         hrApi.getRequest1(url, params).then(res => {
           // 给表格数据赋值
-          console.log(res.data.resumeInfo.list);
-
           this.tableData = res.data.resumeInfo.list.map(item => {
             item.gender = item.gender === 1 ? "女" : "男";
             return item;
@@ -302,6 +303,7 @@ export default {
     handleCommand(position) {
       // 点击按职位分类查询简历时,则简历查看情况的tab不加深显示
       this.searchType = "allResume";
+      this.clickSearch = true;
       let url = "/position/category";
       let params = {
         page: 1,
@@ -318,10 +320,16 @@ export default {
         });
       });
 
-      this.$message("click on item " + position);
+      this.$message("click on  " + position);
+    },
+    // 取消搜索
+    clearSearch() {
+      this.clickSearch = true;
+      this.getList();
     },
     // 搜索框搜索简历
     searchKeyword(keyword) {
+      this.clickSearch = false;
       let url = "/search";
       let params = "keyword=" + keyword;
       hrApi.postRequest(url, params).then(res => {
