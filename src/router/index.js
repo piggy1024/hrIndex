@@ -9,27 +9,33 @@ import Interview from "@/components/hr/Interview";
 import Employ from "@/components/hr/Employ";
 import Talent from "@/components/hr/Talent";
 import Root from "@/components/hr/Root"
+import HR_Register from "@/components/Hr_register";
 
 Vue.use(Router)
 export default new Router({
-    /*mode:'history',*/
+    // mode: 'history',
     routes: [{
             path: '/',
             name: 'Login',
             component: Login,
 
         },
+        {
+            path: '/login',
+            name: 'Login',
+            component: Login,
 
+        },
         //  为了显示首页方便调试
         {
-            path: '/',
-            name: 'Login',
-            component: Hr_Index,
+            path: '/hr_register',
+            name: 'HRRegister',
+            component: HR_Register,
 
         },
         {
             path: '/hr_index',
-            name: ' Hr_Index',
+            name: 'Hr_Index',
             component: Hr_Index,
             children: [{
                     // 个人信息

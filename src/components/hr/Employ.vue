@@ -214,7 +214,6 @@ export default {
       let url = "/resume/-3";
       let params = "page=" + this.config.page + "limit=" + 8;
       hrApi.getRequest1(url, params).then(res => {
-        // console.log(res);
         this.tableData = res.data.resumes.list.map(item => {
           item.gender = item.gender === 1 ? "女" : "男";
           return item;

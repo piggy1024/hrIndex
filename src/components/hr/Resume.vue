@@ -70,6 +70,7 @@
         <el-table-column prop="dirDesire" label="工龄"></el-table-column>
         <el-table-column prop="graduation" label="毕业院校"></el-table-column>
         <el-table-column prop="title" label="应聘职位"></el-table-column>
+        <el-table-column prop="stateName" label="简历状态"></el-table-column>
         <el-table-column label="个人简历" width="80">
           <template slot-scope="scope">
             <!-- 简历按钮 -->
@@ -89,6 +90,8 @@
                 <el-dropdown-item @click.native="sendOffer(scope.row.applicationId)">发送offer</el-dropdown-item>
                 <el-dropdown-item @click.native="quit(scope.row.applicationId)">放弃</el-dropdown-item>
                 <el-dropdown-item @click.native="interview(scope.row.applicationId)">安排面试</el-dropdown-item>
+                <el-dropdown-item @click.native="onlineResume(scope.row)">简历在线预览</el-dropdown-item>
+                <el-dropdown-item @click.native="downResume(scope.row)">简历下载</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </template>
@@ -326,7 +329,6 @@ export default {
           item.gender = item.gender === 1 ? "女" : "男";
           return item;
         });
-        // console.log(res);
       });
     },
     // hr通知发送offer
@@ -356,9 +358,6 @@ export default {
       this.$refs.formIterview.validate(valid => {
         /*会自动根据rules进行校验*/
         if (valid) {
-          // console.log("应该是3吧+" + this.applicationId);
-          // console.log(this.formIterview.rounds);
-
           // url 为接口网址
           let url = "/interview/" + this.applicationId;
           let params =
@@ -367,7 +366,6 @@ export default {
             "&interviewsDesc=" +
             this.formIterview.description;
           hrApi.putRequest1(url, params).then(res => {
-            // console.log(res);
             if (res.statusText === "OK") {
               this.$message.success("安排面试成功!");
 
@@ -403,6 +401,8 @@ export default {
       this.getList();
     },
 
+    // 操作栏方法
+
     // 发送offer
     sendOffer(applicationId) {
       this.dialogSendoffer = true;
@@ -411,16 +411,33 @@ export default {
     // 放弃简历
     quit(id) {
       let url = "/removeresume/" + id;
-
       hrApi.putRequest(url).then(res => {
-        console.log(res);
+        res;
       });
-      console.log("行数" + id);
     },
     // 安排面试
     interview(applicationId) {
       this.dialogInterview = true;
       this.applicationId = applicationId;
+    },
+    // 简历在线预览
+    onlineResume(data) {
+      let url = "/hr/resume/download/" + data.userId + "/inline";
+      this.$http.get(url).then(res => {
+        // 跳转到预览界面
+        res;
+        window.location.href = "http:localhost:8080" + url;
+        // this.$router.push(res.config.url);
+      });
+    },
+    // 简历下载
+    downResume(data) {
+      let url = "/hr/resume/download/" + data.userId + "/download";
+      this.$http.get(url).then(res => {
+        // 跳转到下载页面
+        res;
+        window.location.href = "http:localhost:8080" + url;
+      });
     },
 
     // 显示简历的详细信息
@@ -428,7 +445,6 @@ export default {
       let url = "/resume/ResumeDesc";
       let parms = "applicationId=" + applicationId;
       hrApi.postRequest(url, parms).then(res => {
-        // console.log(res.data.resumeEntity);
         let resumeEntity = res.data.resumeEntity;
         this.ability = resumeEntity.ability;
         this.internship = resumeEntity.internship;
@@ -441,9 +457,11 @@ export default {
     }
   },
   created() {
+    // 默认分页查询 查的是所有简历的范围
     this.searchType = "allResume";
+    // 进入加载简历信息
     this.getList();
-
+    // 进入加载职位信息
     this.getPositionList();
   }
 };

@@ -4,11 +4,14 @@
     element-loading-text="正在登录中"
     element-loading-spinner="el-icon-loading"
     element-loading-background="white"
+    class="LoginContainer"
   >
-    <el-form :rules="rules" :model="LoginForm" ref="LoginForm" class="LoginContainer">
+    <div style="text-align:center">HR登陆界面</div>
+    <el-form :rules="rules" :model="LoginForm" ref="LoginForm">
       <!--通过ref属性把表单加在进refs-->
       <el-form-item prop="username">
         <!--用prop属性来绑定校验字段-->
+        账号
         <el-input
           size="normal"
           type="text"
@@ -18,6 +21,7 @@
         ></el-input>
       </el-form-item>
       <el-form-item prop="password">
+        密码
         <el-input
           size="normal"
           type="password"
@@ -30,6 +34,10 @@
         </el-input>
       </el-form-item>
       <el-checkbox v-model="checked" class="LoginRem">是否记住密码</el-checkbox>
+      <div style="float:right">
+        没有账号?点击
+        <router-link to="/hr_register">注册</router-link>
+      </div>
       <el-button size="normal" type="primary" style="width: 100%" @click="submitLogin">登录</el-button>
     </el-form>
   </div>
@@ -76,7 +84,7 @@ export default {
               console.log(res);
               // res.data ===0 是登陆成功   === -1 是登陆失败  === 1 是root
               if (res.data === 0) {
-                this.$store.state.tab.isRoot = false;
+                this.$store.state.tab.isRoot = true;
                 this.$message.success("登录成功！");
                 window.sessionStorage.setItem("user", JSON.stringify(res));
                 this.$router.replace("/Hr_index");
@@ -105,11 +113,11 @@ export default {
 
 <style scoped>
 .LoginContainer {
-  border-radius: 15px; /*边框 */
+  border-radius: 15px;
   background-clip: padding-box;
-  margin: 180px auto; /*上右下左*/
+  margin: 180px auto;
   width: 350px;
-  padding: 35px 35px 15px 35px; /*//内边距,上，右，下，左*/
+  padding: 35px 35px 15px 35px;
   background: white;
   border: 1px solid silver;
 }

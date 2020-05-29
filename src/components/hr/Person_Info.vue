@@ -44,7 +44,7 @@
       </el-row>
     </el-card>
     <!-- 修改信息对话框 -->
-    <el-dialog title="修改用户" :visible.sync="editDialogVisible" width="50%">
+    <el-dialog title="修改用户信息" :visible.sync="editDialogVisible" width="50%">
       <el-form :model="editForm" ref="editFormRef" label-width="70px">
         <el-form-item label="ID">
           <!-- ID不可以修改 -->
@@ -63,7 +63,7 @@
           <el-input v-model="editForm.description"></el-input>
         </el-form-item>
         <el-form-item label="密码">
-          <el-input v-model="editForm.hrPassword"></el-input>
+          <el-input v-model.trim="editForm.hrPassword" type="password"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -91,7 +91,14 @@ export default {
       // 控制修改个人信息对话框的显示与隐藏
       editDialogVisible: false,
       // 查询到的个人信息对象
-      editForm: {}
+      editForm: {
+        hrId: "",
+        hrName: "",
+        hrEmail: "",
+        hrMobile: "",
+        description: "",
+        hrPassword: ""
+      }
     };
   },
   created() {
@@ -100,6 +107,8 @@ export default {
   methods: {
     getUserList() {
       hrApi.postRequest1("/info").then(res => {
+        // console.log(res);
+
         this.userlist = res.data.hr;
         // 给修改页面的dialog赋值
         this.editForm = this.userlist;
@@ -111,13 +120,13 @@ export default {
       this.editDialogVisible = true;
     },
     editUserInfo() {
-      let url = "/info/update";
+      let url = "/info/update/" + this.userlist.hrId;
       // post请求参数拼接
       let params =
         "hrMobile=" +
         this.editForm.hrMobile +
         "&hrPassword=" +
-        this.editForm.password +
+        this.editForm.hrPassword +
         "&hrName=" +
         this.editForm.hrName +
         "&hrEmail=" +
@@ -126,6 +135,7 @@ export default {
         this.editForm.description +
         "&departmentId=" +
         this.editForm.departmentId;
+
       hrApi.postRequest(url, params).then(res => {
         // console.log(res);
         if (res.status === 200) {
