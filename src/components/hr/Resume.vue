@@ -433,8 +433,8 @@ export default {
       let url = "/hr/resume/download/" + data.userId + "/inline";
       this.$http.get(url).then(res => {
         // 跳转到预览界面
-        res;
-        window.location.href = "http:localhost:8080" + url;
+        console.log(res);
+        window.location.href = url;
         // this.$router.push(res.config.url);
       });
     },
@@ -444,7 +444,7 @@ export default {
       this.$http.get(url).then(res => {
         // 跳转到下载页面
         res;
-        window.location.href = "http:localhost:8080" + url;
+        window.location.href = url;
       });
     },
 
